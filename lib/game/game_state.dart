@@ -14,6 +14,7 @@ class SnakeGame extends ChangeNotifier {
   GameStatus status = GameStatus.menu;
   int score = 0;
   Timer? _ticker;
+  int _currentSpeed = 300;
   final Random _random = Random();
 
   Direction get direction => _direction;
@@ -33,6 +34,7 @@ class SnakeGame extends ChangeNotifier {
     snake = [const Point(10, 15), const Point(9, 15), const Point(8, 15)];
     _direction = Direction.right;
     score = 0;
+    _currentSpeed = 300;
     _inputQueue.clear();
     _spawnFood();
   }
@@ -93,7 +95,7 @@ class SnakeGame extends ChangeNotifier {
 
   void _startTicker() {
     _ticker?.cancel();
-    _ticker = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    _ticker = Timer.periodic(Duration(milliseconds: _currentSpeed), (timer) {
       _tick();
     });
   }
@@ -138,7 +140,9 @@ class SnakeGame extends ChangeNotifier {
     if (newHead == food) {
       score += 10;
       _spawnFood();
-      // Increase speed slightly? For now constant speed.
+      // Increase speed
+      _currentSpeed = max(50, _currentSpeed - 10);
+      _startTicker();
     } else {
       snake.removeLast();
     }
